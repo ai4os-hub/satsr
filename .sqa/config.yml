@@ -1,0 +1,33 @@
+# .sqa/config.yml - jenkins-pipeline-library configuration file
+sqa_criteria:
+  qc_style:
+    repos:
+      satsr:
+        container: testing
+        tox:
+          tox_file: tox.ini
+          testenv:
+            - qc.sty
+  qc_coverage:
+    repos:
+      satsr:
+        container: testing
+        tox:
+          tox_file: tox.ini
+          testenv:
+            - qc.cov
+  qc_security:
+    repos:
+      satsr:
+        container: testing
+        tox:
+          tox_file: tox.ini
+          testenv:
+            - qc.sec
+
+environment:
+  GIT_COMMITTER_NAME: "Ignacio Heredia (CSIC)"
+  GIT_COMMITTER_EMAIL: "iheredia@ifca.unican.es"
+  LANG: C.UTF-8
+
+timeout: 600
