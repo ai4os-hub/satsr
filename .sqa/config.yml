@@ -29,5 +29,6 @@ environment:
   GIT_COMMITTER_NAME: "Ignacio Heredia (CSIC)"
   GIT_COMMITTER_EMAIL: "iheredia@ifca.unican.es"
   LANG: C.UTF-8
+  JPL_DOCKERFORCEBUILD: "True"
 
 timeout: 600
