@@ -3,7 +3,7 @@
 ARG tag=1.14.0-py3
 FROM tensorflow/tensorflow:${tag}
 RUN apt-get update && \
-    apt-get install -y gdal-bin python3-gdal && \
+    apt-get install -y gdal-bin python3-gdal libgdal-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 RUN pip3 install --no-cache-dir --upgrade pip "setuptools<58"   wheel
