@@ -1,18 +1,23 @@
 # Docker image for CI testing of the DEEPaaS API
-# Note there is probably no gpu in the CI server
+# Note there is probably no GPU in the CI server
 ARG tag=1.14.0-py3
 FROM tensorflow/tensorflow:${tag}
-# Add PPA to get a newer version of GDAL
+
+# Add PPA and install GDAL + required tools
 RUN apt-get update && \
     apt-get install -y software-properties-common && \
     add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable && \
+    apt-get update && \
     apt-get install -y \
         gdal-bin \
+        libgdal-dev \
         python3-gdal \
         python3-pip && \
-    pip3 install --upgrade pip "setuptools<58" wheel
+    pip3 install --no-cache-dir --upgrade pip "setuptools<58" wheel && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-RUN pip3 install --no-cache-dir --upgrade pip "setuptools<58"   wheel
+
+# Install tox
 RUN pip3 install --no-cache-dir tox
+
 CMD ["sleep", "infinity"]
