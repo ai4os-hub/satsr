@@ -2,6 +2,7 @@
 # Note there is probably no GPU in the CI server
 ARG tag=1.14.0-py3
 FROM tensorflow/tensorflow:${tag}
+ENV FORCE_REBUILD=1
 
 # Add PPA and install GDAL + required tools
 RUN apt-get update && \
