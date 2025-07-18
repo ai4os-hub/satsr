@@ -69,6 +69,7 @@ RUN git clone https://github.com/deephdc/deep-start /srv/.deep-start && \
     ln -s /srv/.deep-start/run_jupyter.sh /usr/local/bin/run_jupyter
 
 # Install FLAAT (FLAsk support for handling Access Tokens)
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir flaat && \
     rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/*
@@ -95,7 +96,8 @@ RUN if [ "$jlab" = true ]; then \
 # Install spatial packages
 RUN apt update && \
 	apt install -y gdal-bin python3-gdal
-RUN pip install --no-cache-dir gdal>=2.2,<3 
+RUN pip install --no-cache-dir "gdal>=2.2,<3"
+
   
 # Install user app:
 RUN git clone -b $branch https://github.com/deephdc/satsr && \
@@ -115,4 +117,4 @@ EXPOSE 6006
 EXPOSE 8888
 
 # Account for OpenWisk functionality (deepaas >=0.4.0) + proper docker stop
-CMD ["deepaas-run", "--openwhisk-detect", "--listen-ip", "0.0.0.0", "--listen-port", "5000"]
+CMD ["deepaas-run",  "--listen-ip", "0.0.0.0", "--listen-port", "5000"]
