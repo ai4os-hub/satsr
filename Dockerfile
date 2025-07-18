@@ -28,7 +28,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
          psmisc \
          python3-setuptools \
          python3-pip \
-         python3-wheel && \
+         python3-wheel  && \
+         
+
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /root/.cache/pip/* && \
@@ -93,7 +95,8 @@ RUN if [ "$jlab" = true ]; then \
 # Install spatial packages
 RUN apt update && \
 	apt install -y gdal-bin python3-gdal
-
+RUN pip install --no-cache-dir gdal>=2.2,<3 
+  
 # Install user app:
 RUN git clone -b $branch https://github.com/deephdc/satsr && \
     cd  satsr && \
