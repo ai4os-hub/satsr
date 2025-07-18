@@ -14,7 +14,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 
-RUN pip3 install --no-cache-dir --upgrade pip "setuptools<42" wheel "gdal>=2.2,<3"
+RUN pip3 install --upgrade pip "setuptools<42" wheel "gdal>=2.2,<3"
 
 
 RUN pip3 install --no-cache-dir tox
