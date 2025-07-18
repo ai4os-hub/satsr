@@ -13,7 +13,7 @@ you make to the code.
 
 import unittest
 
-import imgclas.api as api
+import satsr.api as api
 
 
 class TestModelMethods(unittest.TestCase):
