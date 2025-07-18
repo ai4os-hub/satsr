@@ -17,6 +17,7 @@ RUN apt-get update && \
 RUN pip3 install --no-cache-dir pip "setuptools<42" wheel "gdal>=2.2,<3"
 
 
-RUN pip3 install --no-cache-dir tox
+RUN pip3 install --no-cache-dir tox pbr
+ENV PBR_VERSION=1.0.0
 
 CMD ["sleep", "infinity"]
