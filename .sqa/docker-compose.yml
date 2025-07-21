@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
   testing:
-    image: "mteamkit/cicd-python-gl"
+    image: "indigodatacloud/ci-images:python3.6"
     container_name: "${BUILD_TAG}"
     hostname: "${BUILD_TAG}"
     working_dir: /srv
