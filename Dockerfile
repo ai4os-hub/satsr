@@ -100,7 +100,7 @@ RUN pip install --no-cache-dir "gdal>=2.2,<3"
 
   
 # Install user app:
-RUN git clone -b $branch https://github.com/deephdc/satsr && \
+RUN git clone -b $branch https://github.com/ai4os-hub/satsr.git && \
     cd  satsr && \
     pip install --no-cache-dir -e . && \
     rm -rf /root/.cache/pip/* && \
