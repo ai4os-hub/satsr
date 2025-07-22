@@ -39,7 +39,7 @@ class TestModelMethods(unittest.TestCase):
         )
         self.assertEqual(
             self.meta["License"].lower(),
-            "apache".lower(),
+            "mit".lower(),
         )
 
 
