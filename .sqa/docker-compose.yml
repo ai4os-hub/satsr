@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
   testing:
-    image: "tensorflow/tensorflow:1.14.0-py3"
+    image: "indigodatacloud/ci-images:python3.6"
     container_name: "${BUILD_TAG}"
     hostname: "${BUILD_TAG}"
     working_dir: /srv
