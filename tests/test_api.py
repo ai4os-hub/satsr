@@ -32,7 +32,7 @@ class TestModelMethods(unittest.TestCase):
         """
         self.assertEqual(
             self.meta["Name"].lower().replace("-", "_"),
-            "imgclas".lower().replace("-", "_"),
+            "satsr".lower().replace("-", "_"),
         )
         self.assertEqual(
             self.meta["Author"].lower(), "ignacio heredia (csic)".lower()
