@@ -25,7 +25,9 @@ from satsr import config, paths, main_sat
 from satsr.train_runfile import train_fn
 from satsr.test_runfile import test, load_models
 from satsr.utils import misc
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parents[1]
 
 # FIXME: There is a memory leak? --> outputs should be periodically cleared
 
@@ -227,29 +229,32 @@ def get_predict_args():
 
     return populate_parser(parser, default_conf)
 
-
 def get_metadata():
     """
-    Function to read metadata
+    DO NOT REMOVE - All modules should have a get_metadata() function
+    with appropriate keys.
     """
+    distros = list(pkg_resources.find_distributions(str(BASE_DIR), only=True))
+    if len(distros) == 0:
+        raise Exception("No package found.")
+    pkg = distros[0]  # if several select first
 
-    module = __name__.split('.', 1)
-
-    pkg = pkg_resources.get_distribution(module[0])
-    meta = {
-        'Name': None,
-        'Version': None,
-        'Summary': None,
-        'Home-page': None,
-        'Author': None,
-        'Author-email': None,
-        'License': None,
+    meta_fields = {
+        "Name": None,
+        "Version": None,
+        "Summary": None,
+        "Home-page": None,
+        "Author": None,
+        "Author-email": None,
+        "License": None,
     }
-
+    meta = {}
     for line in pkg.get_metadata_lines("PKG-INFO"):
-        for par in meta:
-            if line.startswith(par + ":"):
+       # line_low = line.lower()  # to avoid inconsistency due to letter cases
+        for k in meta_fields:
+            if line.startswith(k + ":"):
                 _, value = line.split(": ", 1)
-                meta[par] = value
+                meta[k] = value
+    print(meta)            
 
     return meta
