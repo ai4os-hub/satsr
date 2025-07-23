@@ -50,7 +50,7 @@ def update_user_conf(user_args):
     for group, val in sorted(CONF.items()):
         for g_key, g_val in sorted(val.items()):
             if g_key in user_args:
-                g_val['value'] = json.loads(user_args[g_key])
+                g_val["value"] = json.loads(user_args[g_key])
 
     # Check and save the configuration
     config.check_conf(conf=CONF)
@@ -67,16 +67,16 @@ def train(**args):
     """
     update_user_conf(user_args=args)
     CONF = config.conf_dict
-    TIMESTAMP = datetime.now().strftime('%Y-%m-%d_%H%M%S')
+    TIMESTAMP = datetime.now().strftime("%Y-%m-%d_%H%M%S")
 
-    if CONF['training']['max_res'] is None:
+    if CONF["training"]["max_res"] is None:
         # Train one model for each possible resolution to super-resolve in the satellite
         resolutions = main_sat.res_to_bands().keys()
         min_res = min(resolutions)
         train_res = [res for res in resolutions if res != min_res]
         for res in train_res:
-            timestamp = TIMESTAMP + '_model_{}m'.format(res)
-            CONF['training']['max_res'] = res
+            timestamp = TIMESTAMP + "_model_{}m".format(res)
+            CONF["training"]["max_res"] = res
             train_fn(TIMESTAMP=timestamp, CONF=CONF)
 
     else:
@@ -85,16 +85,20 @@ def train(**args):
 
 # @catch_error
 def predict(**args):
+    if not any([args["urls"], args["files"]]) or all(
+        [args["urls"], args["files"]]
+    ):
+        raise Exception(
+            "You must provide either 'url' or 'data' in the payload"
+        )
 
-    if (not any([args['urls'], args['files']]) or
-            all([args['urls'], args['files']])):
-        raise Exception("You must provide either 'url' or 'data' in the payload")
-
-    if args['files']:
-        args['files'] = [args['files']]  # patch until list is available
+    if args["files"]:
+        args["files"] = [
+            args["files"]
+        ]  # patch until list is available
         return predict_data(args)
-    elif args['urls']:
-        args['urls'] = [args['urls']]  # patch until list is available
+    elif args["urls"]:
+        args["urls"] = [args["urls"]]  # patch until list is available
         return predict_url(args)
 
 
@@ -103,35 +107,43 @@ def predict_url(args):
     Perform super-resolution on a satellite tile hosted on the web
     """
     update_user_conf(user_args=args)
-    conf = config.conf_dict['testing']
+    conf = config.conf_dict["testing"]
 
     # Use a compressed file hosted on the web
-    url = args['urls'][0]
+    url = args["urls"][0]
     resp = requests.get(url, stream=True, allow_redirects=True)
 
-    file_format = mimetypes.guess_extension(resp.headers['content-type'])[1:]
+    file_format = mimetypes.guess_extension(
+        resp.headers["content-type"]
+    )[1:]
     if file_format is None:
-        file_format = os.path.splitext(resp.headers['X-Object-Meta-Orig-Filename'])[1][1:]
+        file_format = os.path.splitext(
+            resp.headers["X-Object-Meta-Orig-Filename"]
+        )[1][1:]
 
     # Download and extract the compressed file
-    print('Downloading the file ...')
-    tile_path = misc.open_compressed(byte_stream=io.BytesIO(resp.raw.read()),
-                                     file_format=file_format,
-                                     output_folder=os.path.join(paths.get_test_dir(), 'sat_tiles'))
+    print("Downloading the file ...")
+    tile_path = misc.open_compressed(
+        byte_stream=io.BytesIO(resp.raw.read()),
+        file_format=file_format,
+        output_folder=os.path.join(paths.get_test_dir(), "sat_tiles"),
+    )
 
     # Predict and save the output
     try:
-        output_path = test(tile_path=tile_path,
-                           output_path=conf['output_path'],
-                           roi_x_y=conf['roi_x_y_test'],
-                           roi_lon_lat=conf['roi_lon_lat_test'],
-                           max_res=conf['max_res_test'],
-                           copy_original_bands=conf['copy_original_bands'],
-                           output_file_format=conf['output_file_format'])
+        output_path = test(
+            tile_path=tile_path,
+            output_path=conf["output_path"],
+            roi_x_y=conf["roi_x_y_test"],
+            roi_lon_lat=conf["roi_lon_lat_test"],
+            max_res=conf["max_res_test"],
+            copy_original_bands=conf["copy_original_bands"],
+            output_file_format=conf["output_file_format"],
+        )
     finally:
         shutil.rmtree(tile_path, ignore_errors=True)
 
-    return open(output_path, 'rb')
+    return open(output_path, "rb")
 
 
 def predict_data(args):
@@ -139,27 +151,33 @@ def predict_data(args):
     Perform super-resolution on a satellite tile
     """
     update_user_conf(user_args=args)
-    conf = config.conf_dict['testing']
+    conf = config.conf_dict["testing"]
 
     # Process data stream of bytes
-    file_format = mimetypes.guess_extension(args['files'][0].content_type)[1:]
-    tile_path = misc.open_compressed(byte_stream=open(args['files'][0].filename, 'rb'),
-                                     file_format=file_format,
-                                     output_folder=os.path.join(paths.get_test_dir(), 'sat_tiles'))
+    file_format = mimetypes.guess_extension(
+        args["files"][0].content_type
+    )[1:]
+    tile_path = misc.open_compressed(
+        byte_stream=open(args["files"][0].filename, "rb"),
+        file_format=file_format,
+        output_folder=os.path.join(paths.get_test_dir(), "sat_tiles"),
+    )
 
     # Predict and save the output
     try:
-        output_path = test(tile_path=tile_path,
-                           output_path=conf['output_path'],
-                           roi_x_y=conf['roi_x_y_test'],
-                           roi_lon_lat=conf['roi_lon_lat_test'],
-                           max_res=conf['max_res_test'],
-                           copy_original_bands=conf['copy_original_bands'],
-                           output_file_format=conf['output_file_format'])
+        output_path = test(
+            tile_path=tile_path,
+            output_path=conf["output_path"],
+            roi_x_y=conf["roi_x_y_test"],
+            roi_lon_lat=conf["roi_lon_lat_test"],
+            max_res=conf["max_res_test"],
+            copy_original_bands=conf["copy_original_bands"],
+            output_file_format=conf["output_file_format"],
+        )
     finally:
         shutil.rmtree(tile_path, ignore_errors=True)
 
-    return open(output_path, 'rb')
+    return open(output_path, "rb")
 
 
 def populate_parser(parser, default_conf):
@@ -171,25 +189,37 @@ def populate_parser(parser, default_conf):
             gg_keys = g_val.keys()
 
             # Load optional keys
-            help = g_val['help'] if ('help' in gg_keys) else ''
-            type = getattr(builtins, g_val['type']) if ('type' in gg_keys) else None
-            choices = g_val['choices'] if ('choices' in gg_keys) else None
+            help = g_val["help"] if ("help" in gg_keys) else ""
+            type = (
+                getattr(builtins, g_val["type"])
+                if ("type" in gg_keys)
+                else None
+            )
+            choices = (
+                g_val["choices"] if ("choices" in gg_keys) else None
+            )
 
             # Additional info in help string
-            help += '\n' + "<font color='#C5576B'> Group name: **{}**".format(str(group))
+            help += (
+                "\n"
+                + "<font color='#C5576B'> Group name: **{}**".format(
+                    str(group)
+                )
+            )
             if choices:
-                help += '\n' + "Choices: {}".format(str(choices))
+                help += "\n" + "Choices: {}".format(str(choices))
             if type:
-                help += '\n' + "Type: {}".format(g_val['type'])
+                help += "\n" + "Type: {}".format(g_val["type"])
             help += "</font>"
 
             # Create arg dict
-            opt_args = {'missing': json.dumps(g_val['value']),
-                        'description': help,
-                        'required': False,
-                        }
+            opt_args = {
+                "missing": json.dumps(g_val["value"]),
+                "description": help,
+                "required": False,
+            }
             if choices:
-                opt_args['enum'] = [json.dumps(i) for i in choices]
+                opt_args["enum"] = [json.dumps(i) for i in choices]
 
             parser[g_key] = fields.Str(**opt_args)
 
@@ -199,42 +229,59 @@ def populate_parser(parser, default_conf):
 def get_train_args():
     parser = OrderedDict()
     default_conf = config.CONF
-    default_conf = OrderedDict([('general', default_conf['general']),
-                                ('training', default_conf['training'])])
+    default_conf = OrderedDict(
+        [
+            ("general", default_conf["general"]),
+            ("training", default_conf["training"]),
+        ]
+    )
     return populate_parser(parser, default_conf)
 
 
 def get_predict_args():
     parser = OrderedDict()
     default_conf = config.CONF
-    default_conf = OrderedDict([('general', default_conf['general']),
-                                ('testing', default_conf['testing'])])
+    default_conf = OrderedDict(
+        [
+            ("general", default_conf["general"]),
+            ("testing", default_conf["testing"]),
+        ]
+    )
 
     # Add data and url fields
-    parser['files'] = fields.Field(required=False,
-                                   missing=None,
-                                   type="file",
-                                   data_key="data",
-                                   location="form",
-                                   description="Select the file you want to classify.")
+    parser["files"] = fields.Field(
+        required=False,
+        missing=None,
+        type="file",
+        data_key="data",
+        location="form",
+        description="Select the file you want to classify.",
+    )
 
-    parser['urls'] = fields.Url(required=False,
-                                missing=None,
-                                description="Select an URL of the file you want to classify.")
+    parser["urls"] = fields.Url(
+        required=False,
+        missing=None,
+        description="Select an URL of the file you want to classify.",
+    )
     # missing action="append" --> append more than one url
 
     # Add format type of the response
-    parser['accept'] = fields.Str(description="Media type(s) that is/are acceptable for the response.",
-                                  validate=validate.OneOf(["image/tiff"]))
+    parser["accept"] = fields.Str(
+        description="Media type(s) that is/are acceptable for the response.",
+        validate=validate.OneOf(["image/tiff"]),
+    )
 
     return populate_parser(parser, default_conf)
+
 
 def get_metadata():
     """
     DO NOT REMOVE - All modules should have a get_metadata() function
     with appropriate keys.
     """
-    distros = list(pkg_resources.find_distributions(str(BASE_DIR), only=True))
+    distros = list(
+        pkg_resources.find_distributions(str(BASE_DIR), only=True)
+    )
     if len(distros) == 0:
         raise Exception("No package found.")
     pkg = distros[0]  # if several select first
@@ -250,11 +297,11 @@ def get_metadata():
     }
     meta = {}
     for line in pkg.get_metadata_lines("PKG-INFO"):
-       # line_low = line.lower()  # to avoid inconsistency due to letter cases
+        # line_low = line.lower()  # to avoid inconsistency due to letter cases
         for k in meta_fields:
             if line.startswith(k + ":"):
                 _, value = line.split(": ", 1)
                 meta[k] = value
-    print(meta)            
+    print(meta)
 
     return meta

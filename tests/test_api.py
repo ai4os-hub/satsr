@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 Its good practice to have tests checking your code runs correctly.
@@ -35,7 +34,8 @@ class TestModelMethods(unittest.TestCase):
             "satsr".lower().replace("-", "_"),
         )
         self.assertEqual(
-            self.meta["Author"].lower(), "ignacio heredia (csic)".lower()
+            self.meta["Author"].lower(),
+            "ignacio heredia (csic)".lower(),
         )
         self.assertEqual(
             self.meta["License"].lower(),

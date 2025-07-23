@@ -20,46 +20,76 @@ from osgeo import gdal
 from satsr.utils import gdal_utils
 
 
-upscaling_factor = {250: 1,
-                    500: 2,
-                    1000: 4}
+upscaling_factor = {250: 1, 500: 2, 1000: 4}
 
 # Bands per resolution (bands should be load always in the same order)
-res_to_bands = {250: ['250_B1', '250_B2'],
-                500: ['500_B1', '500_B2', '500_B3', '500_B4', '500_B5', '500_B6', '500_B7'],
-                1000: ['1000_B1', '1000_B2', '1000_B3', '1000_B4', '1000_B5', '1000_B6', '1000_B7', '1000_B8',
-                       '1000_B9', '1000_B10', '1000_B11', '1000_B12', '1000_B13', '1000_B14', '1000_B15',
-                       '1000_B16', '1000_B26', '1000_B3PR']}
+res_to_bands = {
+    250: ["250_B1", "250_B2"],
+    500: [
+        "500_B1",
+        "500_B2",
+        "500_B3",
+        "500_B4",
+        "500_B5",
+        "500_B6",
+        "500_B7",
+    ],
+    1000: [
+        "1000_B1",
+        "1000_B2",
+        "1000_B3",
+        "1000_B4",
+        "1000_B5",
+        "1000_B6",
+        "1000_B7",
+        "1000_B8",
+        "1000_B9",
+        "1000_B10",
+        "1000_B11",
+        "1000_B12",
+        "1000_B13",
+        "1000_B14",
+        "1000_B15",
+        "1000_B16",
+        "1000_B26",
+        "1000_B3PR",
+    ],
+}
 
-input_shapes = {str(res): (len(band_list), None, None) for res, band_list in res_to_bands.items()}
+input_shapes = {
+    str(res): (len(band_list), None, None)
+    for res, band_list in res_to_bands.items()
+}
 
-band_desc = {'250_B1': '250m Surface Reflectance Band 1 (16-bit integer)',
-             '250_B2': '250m Surface Reflectance Band 2 (16-bit integer)',
-             '500_B1': '500m Surface Reflectance Band 1 (16-bit integer)',
-             '500_B2': '500m Surface Reflectance Band 2 (16-bit integer)',
-             '500_B3': '500m Surface Reflectance Band 3 (16-bit integer)',
-             '500_B4': '500m Surface Reflectance Band 4 (16-bit integer)',
-             '500_B5': '500m Surface Reflectance Band 5 (16-bit integer)',
-             '500_B6': '500m Surface Reflectance Band 6 (16-bit integer)',
-             '500_B7': '500m Surface Reflectance Band 7 (16-bit integer)',
-             '1000_B1': '1km Surface Reflectance Band 1 (16-bit integer)',
-             '1000_B2': '1km Surface Reflectance Band 2 (16-bit integer)',
-             '1000_B3': '1km Surface Reflectance Band 3 (16-bit integer)',
-             '1000_B4': '1km Surface Reflectance Band 4 (16-bit integer)',
-             '1000_B5': '1km Surface Reflectance Band 5 (16-bit integer)',
-             '1000_B6': '1km Surface Reflectance Band 6 (16-bit integer)',
-             '1000_B7': '1km Surface Reflectance Band 7 (16-bit integer)',
-             '1000_B8': '1km Surface Reflectance Band 8 (16-bit integer)',
-             '1000_B9': '1km Surface Reflectance Band 9 (16-bit integer)',
-             '1000_B10': '1km Surface Reflectance Band 10 (16-bit integer)',
-             '1000_B11': '1km Surface Reflectance Band 11 (16-bit integer)',
-             '1000_B12': '1km Surface Reflectance Band 12 (16-bit integer)',
-             '1000_B13': '1km Surface Reflectance Band 13 (16-bit integer)',
-             '1000_B14': '1km Surface Reflectance Band 14 (16-bit integer)',
-             '1000_B15': '1km Surface Reflectance Band 15 (16-bit integer)',
-             '1000_B16': '1km Surface Reflectance Band 16 (16-bit integer)',
-             '1000_B26': '1km Surface Reflectance Band 26 (16-bit integer)',
-             '1000_B3PR': '1km Band 3 Path Radiance (16-bit integer)'}
+band_desc = {
+    "250_B1": "250m Surface Reflectance Band 1 (16-bit integer)",
+    "250_B2": "250m Surface Reflectance Band 2 (16-bit integer)",
+    "500_B1": "500m Surface Reflectance Band 1 (16-bit integer)",
+    "500_B2": "500m Surface Reflectance Band 2 (16-bit integer)",
+    "500_B3": "500m Surface Reflectance Band 3 (16-bit integer)",
+    "500_B4": "500m Surface Reflectance Band 4 (16-bit integer)",
+    "500_B5": "500m Surface Reflectance Band 5 (16-bit integer)",
+    "500_B6": "500m Surface Reflectance Band 6 (16-bit integer)",
+    "500_B7": "500m Surface Reflectance Band 7 (16-bit integer)",
+    "1000_B1": "1km Surface Reflectance Band 1 (16-bit integer)",
+    "1000_B2": "1km Surface Reflectance Band 2 (16-bit integer)",
+    "1000_B3": "1km Surface Reflectance Band 3 (16-bit integer)",
+    "1000_B4": "1km Surface Reflectance Band 4 (16-bit integer)",
+    "1000_B5": "1km Surface Reflectance Band 5 (16-bit integer)",
+    "1000_B6": "1km Surface Reflectance Band 6 (16-bit integer)",
+    "1000_B7": "1km Surface Reflectance Band 7 (16-bit integer)",
+    "1000_B8": "1km Surface Reflectance Band 8 (16-bit integer)",
+    "1000_B9": "1km Surface Reflectance Band 9 (16-bit integer)",
+    "1000_B10": "1km Surface Reflectance Band 10 (16-bit integer)",
+    "1000_B11": "1km Surface Reflectance Band 11 (16-bit integer)",
+    "1000_B12": "1km Surface Reflectance Band 12 (16-bit integer)",
+    "1000_B13": "1km Surface Reflectance Band 13 (16-bit integer)",
+    "1000_B14": "1km Surface Reflectance Band 14 (16-bit integer)",
+    "1000_B15": "1km Surface Reflectance Band 15 (16-bit integer)",
+    "1000_B16": "1km Surface Reflectance Band 16 (16-bit integer)",
+    "1000_B26": "1km Surface Reflectance Band 26 (16-bit integer)",
+    "1000_B3PR": "1km Band 3 Path Radiance (16-bit integer)",
+}
 
 # Borders and patch_sizes for inference
 patch_sizes = {500: 128, 1000: 192}
@@ -71,12 +101,15 @@ min_val = -100
 fill_val = -28672
 
 
-def read_bands(tile_path, roi_x_y=None, roi_lon_lat=None, max_res=1000):
-
-    print('Loading {}'.format(tile_path))
+def read_bands(
+    tile_path, roi_x_y=None, roi_lon_lat=None, max_res=1000
+):
+    print("Loading {}".format(tile_path))
 
     # Select bands
-    resolutions = [res for res in res_to_bands.keys() if res <= max_res]
+    resolutions = [
+        res for res in res_to_bands.keys() if res <= max_res
+    ]
     selected_bands = []
     for res in resolutions:
         selected_bands.extend(res_to_bands[res])
@@ -93,7 +126,7 @@ def read_bands(tile_path, roi_x_y=None, roi_lon_lat=None, max_res=1000):
 
     # Read dataset bands in GDAL
     sub_datasets = hdf_file.GetSubDatasets()
-    sub_datasets_desc = [sd[1].split('] ')[1] for sd in sub_datasets]
+    sub_datasets_desc = [sd[1].split("] ")[1] for sd in sub_datasets]
     ds_bands = {res: None for res in resolutions}
     for res in resolutions:
         # print("Loading selected data from GDAL: {}m".format(res))
@@ -107,8 +140,12 @@ def read_bands(tile_path, roi_x_y=None, roi_lon_lat=None, max_res=1000):
     ds = ds_bands[250][0]
 
     if roi_lon_lat:  # transform lonlat coordinates to pixels
-        roi_x1, roi_y1 = gdal_utils.lonlat_to_xy(roi_lon1, roi_lat1, ds)
-        roi_x2, roi_y2 = gdal_utils.lonlat_to_xy(roi_lon2, roi_lat2, ds)
+        roi_x1, roi_y1 = gdal_utils.lonlat_to_xy(
+            roi_lon1, roi_lat1, ds
+        )
+        roi_x2, roi_y2 = gdal_utils.lonlat_to_xy(
+            roi_lon2, roi_lat2, ds
+        )
 
     if roi_x_y or roi_lon_lat:
         tmxmin = max(min(roi_x1, roi_x2, ds.RasterXSize - 1), 0)
@@ -129,8 +166,14 @@ def read_bands(tile_path, roi_x_y=None, roi_lon_lat=None, max_res=1000):
     ymin = int(tmymin / mult) * mult
     ymax = int((tmymax + 1) / mult) * mult - 1
 
-    print("Selected pixel region: xmin=%d, ymin=%d, xmax=%d, ymax=%d:" % (xmin, ymin, xmax, ymax))
-    print("Image size: width=%d x height=%d" % (xmax - xmin + 1, ymax - ymin + 1))
+    print(
+        "Selected pixel region: xmin=%d, ymin=%d, xmax=%d, ymax=%d:"
+        % (xmin, ymin, xmax, ymax)
+    )
+    print(
+        "Image size: width=%d x height=%d"
+        % (xmax - xmin + 1, ymax - ymin + 1)
+    )
 
     # Reading dataset bands into an array
     data_bands = {res: None for res in resolutions}
@@ -139,12 +182,19 @@ def read_bands(tile_path, roi_x_y=None, roi_lon_lat=None, max_res=1000):
         data_bands[res] = []
         uf = upscaling_factor[res]
         for tmp_ds in ds_bands[res]:
-            tmp_arr = tmp_ds.ReadAsArray(xoff=xmin // uf, yoff=ymin // uf,
-                                         xsize=(xmax - xmin + 1) // uf, ysize=(ymax - ymin + 1) // uf,
-                                         buf_xsize=(xmax - xmin + 1) // uf, buf_ysize=(ymax - ymin + 1) // uf)
+            tmp_arr = tmp_ds.ReadAsArray(
+                xoff=xmin // uf,
+                yoff=ymin // uf,
+                xsize=(xmax - xmin + 1) // uf,
+                ysize=(ymax - ymin + 1) // uf,
+                buf_xsize=(xmax - xmin + 1) // uf,
+                buf_ysize=(ymax - ymin + 1) // uf,
+            )
             data_bands[res].append(tmp_arr)
         data_bands[res] = np.array(data_bands[res])
-        data_bands[res] = np.moveaxis(data_bands[res], 0, -1)  # move to channels last
+        data_bands[res] = np.moveaxis(
+            data_bands[res], 0, -1
+        )  # move to channels last
 
     ####################
     # FIXME: Try to find what is the projection and the geotransform (degrees not meters?) for MODIS
@@ -157,10 +207,12 @@ def read_bands(tile_path, roi_x_y=None, roi_lon_lat=None, max_res=1000):
     # https://gis.stackexchange.com/questions/286089/snpp-viirs-swath-data-reprojection-to-wgs84
 
     # Get coordinates
-    coord = {'xmin': xmin,
-             'ymin': ymin,
-             'geotransform': (0.0, 250.0, 0.0, 0.0, 0.0, -250.0),
-             'geoprojection': 'PROJCS["WGS 84 / UTM zone 30N",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",-3],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","32630"]]'}
+    coord = {
+        "xmin": xmin,
+        "ymin": ymin,
+        "geotransform": (0.0, 250.0, 0.0, 0.0, 0.0, -250.0),
+        "geoprojection": 'PROJCS["WGS 84 / UTM zone 30N",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",-3],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","32630"]]',
+    }
 
     # # Get coordinates
     # coord = {'xmin': xmin,
@@ -172,7 +224,7 @@ def read_bands(tile_path, roi_x_y=None, roi_lon_lat=None, max_res=1000):
     return data_bands, coord
 
 
-def save_as(input_path, format='GTiff'):
+def save_as(input_path, format="GTiff"):
     """
     Save original VIIRS hdf file to another format so that it can be visualized with other programs like QGIS.
     We save a diffent tiff for each resolution to allow for the different geotransforms
@@ -180,7 +232,6 @@ def save_as(input_path, format='GTiff'):
     data_bands, coord = read_bands(tile_path=input_path)
 
     for res, bands in res_to_bands.items():
-
         # Create the lists of output variables to save
         output_bands, output_desc, output_shortnames = [], [], []
         for bi, bn in enumerate(bands):
@@ -189,17 +240,21 @@ def save_as(input_path, format='GTiff'):
             output_shortnames.append(bn)
 
         # Adapt geotransform to resolution
-        geot = list(coord['geotransform'])
+        geot = list(coord["geotransform"])
         geot[1] = res
         geot[5] = -res
 
-        gdal_utils.save_gdal(output_path=input_path[:-4] + '_{}m.tif'.format(res),
-                             bands=output_bands,
-                             descriptions=output_desc,
-                             geotransform=tuple(geot),
-                             geoprojection=coord['geoprojection'],
-                             file_format=format)
+        gdal_utils.save_gdal(
+            output_path=input_path[:-4] + "_{}m.tif".format(res),
+            bands=output_bands,
+            descriptions=output_desc,
+            geotransform=tuple(geot),
+            geoprojection=coord["geoprojection"],
+            file_format=format,
+        )
 
 
-if __name__ == '__main__':
-    save_as(input_path = '/media/ignacio/Datos/datasets/satelites/modis_tiles/MOD09/MOD09.A2019021.1710.006.2019023051303.hdf')
+if __name__ == "__main__":
+    save_as(
+        input_path="/media/ignacio/Datos/datasets/satelites/modis_tiles/MOD09/MOD09.A2019021.1710.006.2019023051303.hdf"
+    )

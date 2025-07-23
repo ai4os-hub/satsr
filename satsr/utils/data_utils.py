@@ -8,7 +8,7 @@ from satsr import paths, main_sat
 from satsr.utils.patches import downPixelAggr, save_random_patches
 
 
-def load_data_splits(splits_dir, split_name='train'):
+def load_data_splits(splits_dir, split_name="train"):
     """
     Load the data arrays from the [train/val/test].txt files.
 
@@ -23,18 +23,31 @@ def load_data_splits(splits_dir, split_name='train'):
     X : Numpy array of strs
         First colunm: Contains 'absolute_path_to_file' to images.
     """
-    if '{}.txt'.format(split_name) not in os.listdir(splits_dir):
-        raise ValueError("Invalid value for the split_name parameter: there is no `{}.txt` file in the `{}` "
-                         "directory.".format(split_name, splits_dir))
+    if "{}.txt".format(split_name) not in os.listdir(splits_dir):
+        raise ValueError(
+            "Invalid value for the split_name parameter: there is no `{}.txt` file in the `{}` "
+            "directory.".format(split_name, splits_dir)
+        )
 
     # Loading splits
     print("Loading {} data...".format(split_name))
-    split = np.genfromtxt(os.path.join(splits_dir, '{}.txt'.format(split_name)), dtype='str', delimiter=' ')
+    split = np.genfromtxt(
+        os.path.join(splits_dir, "{}.txt".format(split_name)),
+        dtype="str",
+        delimiter=" ",
+    )
 
     return split
 
 
-def create_patches(tiles, max_res, tiles_dir=None, save_dir=None, roi_x_y=None, num_patches=None):
+def create_patches(
+    tiles,
+    max_res,
+    tiles_dir=None,
+    save_dir=None,
+    roi_x_y=None,
+    num_patches=None,
+):
     """
 
     Parameters
@@ -53,40 +66,58 @@ def create_patches(tiles, max_res, tiles_dir=None, save_dir=None, roi_x_y=None, 
         tiles = [tiles]
 
     for tile in tiles:
-        print('\n Creating patches for {} ...'.format(tile))
+        print("\n Creating patches for {} ...".format(tile))
         tile_path = os.path.join(tiles_dir, tile)
 
         # Clearing previous patches (if any)
-        output_dir = os.path.join(save_dir, os.path.basename(tile_path))
+        output_dir = os.path.join(
+            save_dir, os.path.basename(tile_path)
+        )
         if os.path.isdir(output_dir):
             shutil.rmtree(output_dir)
         os.mkdir(output_dir)
 
-        data_bands, coord = main_sat.read_bands()(tile_path=tile_path, roi_x_y=roi_x_y, max_res=max_res)
+        data_bands, coord = main_sat.read_bands()(
+            tile_path=tile_path, roi_x_y=roi_x_y, max_res=max_res
+        )
 
         # Normalize pixel values and put image in float32 format
         for res in data_bands.keys():
             data_bands[res] = data_bands[res].astype(np.float32)
-            data_bands[res] = (data_bands[res] - main_sat.min_val()) / (main_sat.max_val() - main_sat.min_val())
+            data_bands[res] = (
+                data_bands[res] - main_sat.min_val()
+            ) / (main_sat.max_val() - main_sat.min_val())
 
         # Define the scales of the problem
         resolutions = data_bands.keys()
         max_res, min_res = max(resolutions), min(resolutions)
-        scales = {res: int(res / min_res) for res in resolutions}  # scale with respect to minimum resolution  e.g. {10: 1, 20: 2, 60: 6}
-        inv_scales = {res: int(max_res / res) for res in resolutions}  # scale with respect to maximum resolution e.g. {10: 6, 20: 3, 60: 1} or {10: 2, 20: 1}
+        scales = {
+            res: int(res / min_res) for res in resolutions
+        }  # scale with respect to minimum resolution  e.g. {10: 1, 20: 2, 60: 6}
+        inv_scales = {
+            res: int(max_res / res) for res in resolutions
+        }  # scale with respect to maximum resolution e.g. {10: 6, 20: 3, 60: 1} or {10: 2, 20: 1}
         scale = scales[max_res]
 
         # Check if image has fill_value pixel
         tmp_band = data_bands[min_res][:, :, 0]
         if np.sum(tmp_band == main_sat.fill_val()) > 0:
-            print('The selected image has some [fill_value] pixels')
+            print("The selected image has some [fill_value] pixels")
             # sys.exit()
 
         # Crop GT maps so that they can be correctly downscaled
-        old_H, old_W = data_bands[max_res].shape[:2]  # size of the smallest map
-        new_H, new_W = np.int(old_H/scale) * scale, np.int(old_W/scale) * scale
+        old_H, old_W = data_bands[max_res].shape[
+            :2
+        ]  # size of the smallest map
+        new_H, new_W = (
+            np.int(old_H / scale) * scale,
+            np.int(old_W / scale) * scale,
+        )
         for res, bands in data_bands.items():
-            tmp_H, tmp_W = inv_scales[res] * new_H, inv_scales[res] * new_W
+            tmp_H, tmp_W = (
+                inv_scales[res] * new_H,
+                inv_scales[res] * new_W,
+            )
             data_bands[res] = bands[:tmp_H, :tmp_W, :]
 
         # Create the LR maps
@@ -95,7 +126,12 @@ def create_patches(tiles, max_res, tiles_dir=None, save_dir=None, roi_x_y=None, 
         for res, gt_maps in gt.items():
             lr[res] = downPixelAggr(gt_maps, SCALE=scale)
 
-        save_random_patches(gt=gt[max_res], lr=lr, save_path=output_dir, num_patches=num_patches)
+        save_random_patches(
+            gt=gt[max_res],
+            lr=lr,
+            save_path=output_dir,
+            num_patches=num_patches,
+        )
 
 
 class data_sequence(Sequence):
@@ -105,7 +141,14 @@ class data_sequence(Sequence):
     TODO: Add sample weights on request
     """
 
-    def __init__(self, tiles, max_res, batch_size=32, patches_dir=None, shuffle=True):
+    def __init__(
+        self,
+        tiles,
+        max_res,
+        batch_size=32,
+        patches_dir=None,
+        shuffle=True,
+    ):
         """
         Parameters are the same as in the data_generator function
 
@@ -121,14 +164,28 @@ class data_sequence(Sequence):
             tiles = [tiles]
 
         # Create list of inputs and labels
-        patches_dir = paths.get_patches_dir() if patches_dir is None else patches_dir
-        resolutions = [res for res in main_sat.res_to_bands().keys() if res <= max_res]
-        self.label_res = np.amax(resolutions)  # resolution of the labels
+        patches_dir = (
+            paths.get_patches_dir()
+            if patches_dir is None
+            else patches_dir
+        )
+        resolutions = [
+            res
+            for res in main_sat.res_to_bands().keys()
+            if res <= max_res
+        ]
+        self.label_res = np.amax(
+            resolutions
+        )  # resolution of the labels
 
-        inputs, labels = self.tiles_to_samples(tiles, patches_dir, resolutions)
+        inputs, labels = self.tiles_to_samples(
+            tiles, patches_dir, resolutions
+        )
         assert len(inputs) == len(labels)
-        assert len(inputs) != 0, "Data generator has length zero. Please provide some data for training/validation." \
-                                 "If you don't want to use validation then remove the empty val.txt file."
+        assert len(inputs) != 0, (
+            "Data generator has length zero. Please provide some data for training/validation."
+            "If you don't want to use validation then remove the empty val.txt file."
+        )
 
         self.inputs = inputs
         self.labels = labels
@@ -147,12 +204,23 @@ class data_sequence(Sequence):
             if not file_list:
                 continue
             else:
-                nums = [int(f.split('_')[1].split('.')[0]) for f in file_list]
+                nums = [
+                    int(f.split("_")[1].split(".")[0])
+                    for f in file_list
+                ]
                 num_patches = np.amax(nums) + 1
 
             for i in range(num_patches):
-                tmp_input = {str(res): os.path.join(tilepath, 'input{}_{}.npy'.format(res, i)) for res in resolutions}
-                tmp_label = os.path.join(tilepath, 'label{}_{}.npy'.format(self.label_res, i))
+                tmp_input = {
+                    str(res): os.path.join(
+                        tilepath, "input{}_{}.npy".format(res, i)
+                    )
+                    for res in resolutions
+                }
+                tmp_label = os.path.join(
+                    tilepath,
+                    "label{}_{}.npy".format(self.label_res, i),
+                )
 
                 inputs.append(tmp_input)
                 labels.append(tmp_label)
@@ -163,7 +231,9 @@ class data_sequence(Sequence):
         return int(np.ceil(len(self.inputs) / float(self.batch_size)))
 
     def __getitem__(self, idx):
-        batch_idxs = self.indexes[idx*self.batch_size: (idx+1)*self.batch_size]
+        batch_idxs = self.indexes[
+            idx * self.batch_size : (idx + 1) * self.batch_size
+        ]
 
         batch_X = {res: [] for res in self.resolutions}
         batch_y = []

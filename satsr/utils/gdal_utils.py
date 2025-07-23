@@ -23,14 +23,19 @@ def print_gdal_file_formats():
         driver = gdal.GetDriver(didx)
         if driver:
             metadata = driver.GetMetadata()
-        if (gdal.DCAP_CREATE in (driver and metadata) and metadata[gdal.DCAP_CREATE] == 'YES' and
-                gdal.DCAP_RASTER in metadata and metadata[gdal.DCAP_RASTER] == 'YES'):
+        if (
+            gdal.DCAP_CREATE in (driver and metadata)
+            and metadata[gdal.DCAP_CREATE] == "YES"
+            and gdal.DCAP_RASTER in metadata
+            and metadata[gdal.DCAP_RASTER] == "YES"
+        ):
             name = driver.GetDescription()
             if "DMD_LONGNAME" in metadata:
                 name += ": " + metadata["DMD_LONGNAME"]
             else:
                 name = driver.GetDescription()
-            if "DMD_EXTENSIONS" in metadata: name += " (" + metadata["DMD_EXTENSIONS"] + ")"
+            if "DMD_EXTENSIONS" in metadata:
+                name += " (" + metadata["DMD_EXTENSIONS"] + ")"
             print(name)
 
 
@@ -55,11 +60,11 @@ def lonlat_to_xy(lon, lat, ds):
     srsLatLon.SetWellKnownGeogCS("WGS84")
     ct = osr.CoordinateTransformation(srsLatLon, srs)
 
-    (xp, yp, h) = ct.TransformPoint(lon, lat, 0.)
+    (xp, yp, h) = ct.TransformPoint(lon, lat, 0.0)
     xp -= xoff
     yp -= yoff
     # matrix inversion
-    det_inv = 1. / (a * e - d * b)
+    det_inv = 1.0 / (a * e - d * b)
     x = (e * xp - b * yp) * det_inv
     y = (-d * xp + a * yp) * det_inv
     return int(x), int(y)
@@ -76,13 +81,23 @@ def check_gdal_format(file_format):
     driver = gdal.GetDriverByName(file_format)
     if driver:
         metadata = driver.GetMetadata()
-        if gdal.DCAP_CREATE in metadata and metadata[gdal.DCAP_CREATE] == 'YES':
+        if (
+            gdal.DCAP_CREATE in metadata
+            and metadata[gdal.DCAP_CREATE] == "YES"
+        ):
             return True
     else:
         return False
 
 
-def save_gdal(output_path, bands, descriptions, geotransform, geoprojection, file_format='GTiff'):
+def save_gdal(
+    output_path,
+    bands,
+    descriptions,
+    geotransform,
+    geoprojection,
+    file_format="GTiff",
+):
     """
     Function to save bands into a gdal format
 
@@ -104,18 +119,24 @@ def save_gdal(output_path, bands, descriptions, geotransform, geoprojection, fil
         os.makedirs(path_dir)
 
     # Check file format
-    assert check_gdal_format(file_format), 'File format not supported by GDAL (check https://www.gdal.org/formats_list.html)'
+    assert check_gdal_format(
+        file_format
+    ), "File format not supported by GDAL (check https://www.gdal.org/formats_list.html)"
 
     # Create GDAL dataset
     driver = gdal.GetDriverByName(file_format)
-    result_dataset = driver.Create(output_path,
-                                   bands[0].shape[1], bands[0].shape[0], len(bands),
-                                   gdal.GDT_Float64)
+    result_dataset = driver.Create(
+        output_path,
+        bands[0].shape[1],
+        bands[0].shape[0],
+        len(bands),
+        gdal.GDT_Float64,
+    )
     result_dataset.SetGeoTransform(geotransform)
     result_dataset.SetProjection(geoprojection)
 
     # Save bands and descriptions
     for i, desc in enumerate(descriptions):
-        print('Saving {}'.format(desc))
-        result_dataset.GetRasterBand(i+1).SetDescription(desc)
-        result_dataset.GetRasterBand(i+1).WriteArray(bands[i])
+        print("Saving {}".format(desc))
+        result_dataset.GetRasterBand(i + 1).SetDescription(desc)
+        result_dataset.GetRasterBand(i + 1).WriteArray(bands[i])
