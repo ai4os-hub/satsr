@@ -16,7 +16,7 @@ Github: ignacioheredia
 import os
 from urllib.request import urlopen
 from shutil import copyfileobj
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 import requests
 

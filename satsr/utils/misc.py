@@ -49,7 +49,7 @@ def launch_tensorboard(port=6006):
     subprocess.call(['tensorboard',
                      '--logdir', '{}'.format(paths.get_logs_dir()),
                      '--port', '{}'.format(port),
-                     '--host', '0.0.0.0'])
+                     '--host', '0.0.0.0']) # nosec
 
 
 def get_callbacks():

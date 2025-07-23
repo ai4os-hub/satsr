@@ -12,7 +12,7 @@ LABEL version='0.1'
 # A project to perform super-resolution on satellite imagery
 
 # What user branch to clone (!)
-ARG branch=master
+ARG branch=main
 # If to install JupyterLab
 ARG jlab=true
 # Oneclient version
