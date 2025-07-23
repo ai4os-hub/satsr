@@ -55,10 +55,7 @@ def launch_tensorboard(port=6006):
             "{}".format(paths.get_logs_dir()),
             "--port",
             "{}".format(port),
-            "--host",
-            "0.0.0.0",
-        ]
-    )  # nosec
+            "--host", "0.0.0.0",] )  # nosec
 
 
 def get_callbacks():
