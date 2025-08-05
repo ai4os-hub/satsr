@@ -60,8 +60,8 @@ You can find more information about it in the [DEEP Marketplace](https://marketp
 To start using this framework clone the repo:
 
 ```bash
-git clone https://github.com/deephdc/image-classification-tf
-cd image-classification-tf
+git clone https://github.com/ai4os-hub/satsr.git
+cd satsr
 pip install -e .
 ```
 now run DEEPaaS:
@@ -72,11 +72,11 @@ and open http://0.0.0.0:5000/ui and look for the methods belonging to the `satsr
 
 ### Docker installation
 
-We have also prepared a ready-to-use [Docker container](https://github.com/deephdc/DEEP-OC-satsr) to run this module. To run it:
+We have also prepared a ready-to-use [Docker container](https://github.com/ai4os-hub/satsr.git) to run this module. To run it:
 
 ```bash
-docker search deephdc
-docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 deephdc/deep-oc-satsr
+docker search ai4os-hub
+docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 ai4os-hub/satsr
 ```
 
 Now open http://0.0.0.0:5000/ui and look for the methods belonging to the `satsr` module.

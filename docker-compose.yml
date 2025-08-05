@@ -5,7 +5,7 @@ version: '2.3'
 
 services:
     satsr:
-      image: deephdc/deep-oc-satsr
+      image: ai4os-hub/satsr
       ports:
         - 5000:5000
         - 6006:6006
@@ -13,7 +13,7 @@ services:
 
 
     satsr-gpu:
-      image: deephdc/deep-oc-satsr:gpu
+      image: ai4os-hub/satsr:gpu
       runtime: nvidia
       ports:
         - 5000:5000
