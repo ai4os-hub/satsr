@@ -25,7 +25,7 @@ description: |-
   If you want to perform super-resolution on another satellite, go to the [training section](https://github.com/ai4os-hub/satsr#train-other-satellites)  to see how you can easily add support for additional satellites. 
   We are happy to accept PRs!
 
-  <img class='fit', src='https://raw.githubusercontent.com/deephdc/DEEP-OC-satsr/master/images/satsr.png'/>
+  <img class='fit', src='https://raw.githubusercontent.com/ai4os-hub/satsr/main/reports/figures/satsr.png'/>
 
   **References**
 
