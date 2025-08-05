@@ -1,7 +1,7 @@
 DEEP Open Catalogue: satsr
 ==========================
 
-[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/satsr/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/satsr/job/master)
+[![Build Status](https://jenkins.cloud.ai4eosc.eu/job/AI4OS-hub/job/satsr/job/main/)](https://jenkins.cloud.ai4eosc.eu/job/AI4OS-hub/job/satsr/job/main/)
 
 **Author/Mantainer:** [Ignacio Heredia](https://github.com/IgnacioHeredia) (CSIC)
 
