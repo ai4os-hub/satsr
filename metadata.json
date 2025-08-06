@@ -45,12 +45,12 @@
     "date_creation": "2019-01-01",
     "sources": {
 		"dockerfile_repo": "https://github.com/ai4os-hub/satsr",
-		"docker_registry_repo": "ai4os-hub/deep-oc-satsr",
+		"docker_registry_repo": "ai4os-hub/satsr",
 		"code": "https://github.com/ai4os-hub/satsr"
 	},
     "continuous_integration": {
-        "build_status_badge": "https://jenkins.cloud.ai4eosc.eu/job/AI4OS-HUB-TEST/job/satsr/main",
-        "build_status_url": "https://jenkins.cloud.ai4eosc.eu/job/AI4OS-HUB-TEST/job/satsr/main"
+        "build_status_badge": "https://jenkins.cloud.ai4eosc.eu/job/AI4OS-hub/job/satsr/job/main/",
+        "build_status_url": "https://jenkins.cloud.ai4eosc.eu/job/AI4OS-hub/job/satsr/job/main/"
     },
     "tosca": [
         {
