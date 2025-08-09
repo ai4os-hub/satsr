@@ -1,7 +1,7 @@
-DEEP Open Catalogue: satsr
+satsr
 ==========================
 
-[![Build Status](https://jenkins.cloud.ai4eosc.eu/job/AI4OS-hub/job/satsr/job/main/)](https://jenkins.cloud.ai4eosc.eu/job/AI4OS-hub/job/satsr/job/main/)
+[![Build Status](https://jenkins.cloud.ai4eosc.eu/buildStatus/icon?job=AI4OS-hub/satsr/main)](https://jenkins.cloud.ai4eosc.eu/job/AI4OS-hub/job/satsr/job/main/)
 
 **Author/Mantainer:** [Ignacio Heredia](https://github.com/IgnacioHeredia) (CSIC)
 
